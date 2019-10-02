@@ -18,7 +18,8 @@ Strategies for procedural generation:
 
 
 Classes:
-	AA Guns:
+
+	* AA Guns
 		* Detect player but bullets do not track
 		* Aiming to intercept the player in flight
-		*Randomness of shooting delay/ bullet speed
+		* Randomness of shooting delay/ bullet speed
