@@ -58,7 +58,7 @@ void Kamikaze::initializeSprites(SDL_Renderer* gRenderer)
             width = 124;
             height = 37;
             sprite1 = loadImage("sprites/f16.png", gRenderer);
-            sprite2 = loadImage("sprites/f16.png", gRenderer);
+            sprite2 = loadImage("sprites/f16a.png", gRenderer);
             break;
           case 3: 
             width = 164;
@@ -94,19 +94,19 @@ void Kamikaze::initializeSprites(SDL_Renderer* gRenderer)
             width = 209;
             height = 38;
             sprite1 = loadImage("sprites/mig31.png", gRenderer);
-            sprite2 = loadImage("sprites/mig31.png", gRenderer);
+            sprite2 = loadImage("sprites/mig31a.png", gRenderer);
             break;
           case 9:
             width = 148;
             height = 42;
             sprite1 = loadImage("sprites/mig29.png", gRenderer);
-            sprite2 = loadImage("sprites/mig29.png", gRenderer);
+            sprite2 = loadImage("sprites/mig29a.png", gRenderer);
             break;
           case 10:
             width = 176;
             height = 50;
             sprite1 = loadImage("sprites/su24.png", gRenderer);
-            sprite2 = loadImage("sprites/su24.png", gRenderer);
+            sprite2 = loadImage("sprites/su24a.png", gRenderer);
             break;
         }     
       }

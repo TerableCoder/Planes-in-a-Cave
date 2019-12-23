@@ -27,7 +27,7 @@ public:
   void hit(int d);
 
   // Boss width and height
-  static const int WIDTH = 250;
+  static const int WIDTH = 343;
   static const int HEIGHT = 106;
 
   int getX();
@@ -69,7 +69,7 @@ private:
 
 
   //Pattern functions and variables
-  static const int NUM_PATTERNS = 4;
+  static const int NUM_PATTERNS = 5;
   static const int PATTERN_DELAY = 1000;	// Amount of delay between patterns
   int time_since_pattern;		// Time since a pattern finished
   int last_pattern;				// Time when last pattern finished
@@ -97,6 +97,14 @@ private:
   static const int ANIMATION_FREQ = 200;
   static const int NUM_DIVEBOMBS = 3;
   int divebombs;
+
+  void patternFive(int SCREEN_WIDTH);
+  std::vector<Missile*> handleFiringMissilePatternFive(std::vector<Missile*> missiles, int x, int y, SDL_Renderer* gRenderer);
+  static const int NUM_BLINKS = 5;
+  static const int PATTERN_FIVE_DISAPEAR_TIME = 2500;
+  static const int PATTERN_FIVE_FIRING_FREQ = 1000;
+  int blinks;
+
 
 
   //Shooting variables

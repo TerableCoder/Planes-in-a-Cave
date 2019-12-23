@@ -19,10 +19,11 @@
 #include "Text.h"
 #include "Kamikaze.h"
 #include "Boss.h"
+#include "InfoScreen.h"
 
 constexpr int SCREEN_WIDTH = 1280;
 constexpr int SCREEN_HEIGHT = 720;
-constexpr int LEVEL_WIDTH = 20000;
+int LEVEL_WIDTH;
 constexpr int LEVEL_HEIGHT = 2000;
 constexpr int SCROLL_SPEED = 420;
 constexpr int BG_SCROLL_SPEED = 200;
@@ -50,6 +51,7 @@ MapBlocks *blocks;
 BossBlocks * bossBlocks;
 GameOver *game_over;
 StartScreen *start_screen;
+InfoScreen *info_screen;
 DifficultySelectionScreen *diff_sel_screen;
 CaveSystem *cave_system;
 std::vector<Bullet*> bullets;
@@ -70,6 +72,7 @@ Mix_Music* start_track = NULL;		// Track 2
 Mix_Music* boss_entry = NULL;		// Track 3
 Mix_Music* boss_track_1 = NULL;		// Track 4
 Mix_Music* boss_track_2 = NULL;		// Track 5
+Mix_Music* victory_music = NULL;	// Track 6
 int current_track = -1;
 
 // Variables to indicate that the player has been destroyed
@@ -176,6 +179,7 @@ void close() {
 	Mix_FreeMusic(boss_entry);
 	Mix_FreeMusic(boss_track_1);
 	Mix_FreeMusic(boss_track_2);
+	Mix_FreeMusic(victory_music);
 
 	gWindow = nullptr;
 	gRenderer = nullptr;
@@ -512,6 +516,47 @@ void renderTextAndHealth() {
 	SDL_RenderFillRect(gRenderer, &heat_rect);
 }
 
+void handleVictory() {
+	delete player;
+	delete bossBlocks;
+	delete boss;
+	
+	Mix_PlayMusic(victory_music, -1);
+	SDL_Texture* credits_button = loadImage("sprites/cred_button.png");
+	SDL_Texture* win_screen = loadImage("sprites/WinScreen.png");
+	
+	bool credits = false;
+	SDL_Rect win_screen_rect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+	SDL_Rect cred_rect = {540, 500, 200, 50};
+	
+	SDL_RenderCopyEx(gRenderer, win_screen, nullptr, &win_screen_rect, 0.0, nullptr, SDL_FLIP_NONE);
+	SDL_RenderCopyEx(gRenderer, credits_button, nullptr, &cred_rect, 0.0, nullptr, SDL_FLIP_NONE);
+	
+	SDL_RenderPresent(gRenderer);
+	
+	int x, y;
+	while (!credits) {
+		
+		while(SDL_PollEvent(&e)) {
+			// If mouse event happened
+			if (e.type == SDL_MOUSEMOTION || e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEBUTTONUP)
+			{
+				//Get mouse position
+				SDL_GetMouseState(&x, &y);
+
+				bool inside_cred_button = false;
+				if (x > 540 && x < 740 && y > 500 && y < 550) inside_cred_button = true;
+
+				if (inside_cred_button && e.type == SDL_MOUSEBUTTONUP){
+					credits = true;
+				}
+			}
+		}
+	}
+	game_over->displayCredits(gRenderer);
+	close();
+}
+
 void bossBattle() {
 	delete en;
 	delete blocks;
@@ -590,6 +635,10 @@ void bossBattle() {
 				}
 				// If the game is restarted, reset some things
 				if (!game_over->isGameOver) {
+					difficulty = game_over->diff;
+					if (game_over->diff == 1) LEVEL_WIDTH = 20000;
+					else if (game_over->diff == 2) LEVEL_WIDTH = 50000;
+					else if (game_over->diff == 3) LEVEL_WIDTH = 75000;
 					en = new Enemy(-125, SCREEN_HEIGHT/2, 125, 53, 200, 200, game_over->diff, gRenderer);
 					delete player;
 					player = new Player(SCREEN_WIDTH/4 - Player::PLAYER_WIDTH/2, SCREEN_HEIGHT/2 - Player::PLAYER_HEIGHT/2, game_over->diff, gRenderer);
@@ -716,7 +765,7 @@ void bossBattle() {
 		}
 		// Create explosions relating to the destruction of the boss
 		time_since_destroyed = SDL_GetTicks() - time_destroyed;
-		if (bossDestroyed) {
+		if (bossDestroyed && time_since_destroyed < 4500) {
 			if (damageExplosions == 0 && time_since_destroyed > 250) {
 				bossBlocks->addExplosion(boss->getX() + 50, boss->getY() + boss->getHeight() - 50, 90);
 				damageExplosions++;
@@ -742,9 +791,12 @@ void bossBattle() {
 				damageExplosions++;
 			}
 		}
-		else if (bossDestroyed) {
+		else if (bossDestroyed && !won) {
 			won = true;
 			time_won = SDL_GetTicks();
+		}
+		if (won && SDL_GetTicks() - time_won > 2000) {
+			handleVictory();
 		}
 		
 		// Handle player/powerup collisions
@@ -785,11 +837,12 @@ void bossBattle() {
 		}
 
 		renderTextAndHealth();
-		std::string boss_string = "Boss";
-		Text bossText(gRenderer, boss_string, {255, 255, 255, 255}, font_20);
-		bossText.render(gRenderer, 50, 60);
 
 		if (bossEntered) {
+			std::string boss_string = "Boss";
+			Text bossText(gRenderer, boss_string, {255, 255, 255, 255}, font_20);
+			bossText.render(gRenderer, 50, 60);
+			
 			double health = boss->getHealthPercentage();
 			SDL_Rect outline = {99, 49, 1002, 52};
 			SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
@@ -863,6 +916,20 @@ void bossBattle() {
 		SDL_RenderPresent(gRenderer);
 	}
 }
+//todo load image 
+void handleInfoMenu(){
+	while(info_screen->show){
+		while(SDL_PollEvent(&e)) {
+			if(e.type==SDL_QUIT){
+				close();
+			}
+			info_screen->handleEvent(e);
+		}
+		info_screen->render(gRenderer);
+		SDL_RenderPresent(gRenderer);
+	}
+info_screen->show=true;
+}
 
 int main() {
 	if (!init()) {
@@ -877,16 +944,14 @@ int main() {
 	boss_entry = loadMusic("sounds/boss_entry.wav");
 	boss_track_1 = loadMusic("sounds/boss_1.wav");
 	boss_track_2 = loadMusic("sounds/boss_2.wav");
+	victory_music = loadMusic("sounds/end_track.wav");
 	gBackground = loadImage("sprites/cave.png");
 
 	srand(time(NULL));
 
-	//random open air area. Basing this on level width should make there always be a functional open air area
-	int openAir = (rand() % (LEVEL_WIDTH / (2 * WallBlock::block_side))) + LEVEL_WIDTH / (10 * WallBlock::block_side);
-	int openAirLength = (rand() % (LEVEL_WIDTH / (4 * WallBlock::block_side))) + LEVEL_WIDTH / (10 * WallBlock::block_side);
-
 	cave_system = new CaveSystem();
-	start_screen= new StartScreen(loadImage("sprites/StartScreen.png"),loadImage("sprites/start_button.png"));
+	start_screen= new StartScreen(loadImage("sprites/StartScreen.png"),loadImage("sprites/start_button.png"),loadImage("sprites/info_button.png"));
+	info_screen= new InfoScreen(loadImage("sprites/InfoScreen.png"),loadImage("sprites/back_button.png"));
 	diff_sel_screen = new DifficultySelectionScreen(loadImage("sprites/DiffScreen.png"), loadImage("sprites/easy_button.png"), loadImage("sprites/med_button.png"), loadImage("sprites/hard_button.png"));
 	game_over = new GameOver(loadImage("sprites/cred_button.png"), loadImage("sprites/restart_button.png"));
 
@@ -900,8 +965,13 @@ int main() {
 			if(e.type==SDL_QUIT){
 				start_screen->notStarted=false;
 				gameon=false;
+				close();
 			}
 			start_screen->handleEvent(e);
+		}
+		if(start_screen->infoMenu){
+			handleInfoMenu();
+			start_screen->infoMenu=false;
 		}
 		start_screen->render(gRenderer);
 		SDL_RenderPresent(gRenderer);
@@ -913,12 +983,20 @@ int main() {
 			if(e.type==SDL_QUIT){
 				difficulty=4;
 				gameon=false;
+				close();
 			}
 			difficulty = diff_sel_screen->handleEvent(e);
 		}
 		diff_sel_screen->render(gRenderer);
 		SDL_RenderPresent(gRenderer);
 	}
+	if (difficulty == 1) LEVEL_WIDTH = 20000;
+	else if (difficulty == 2) LEVEL_WIDTH = 50000;
+	else if (difficulty == 3) LEVEL_WIDTH = 75000;
+	
+	//random open air area. Basing this on level width should make there always be a functional open air area
+	int openAir = (rand() % (LEVEL_WIDTH / (2 * WallBlock::block_side))) + LEVEL_WIDTH / (10 * WallBlock::block_side);
+	int openAirLength = (rand() % (LEVEL_WIDTH / (4 * WallBlock::block_side))) + LEVEL_WIDTH / (10 * WallBlock::block_side);
 
 	high_score = readHighScore(difficulty); // For onscreen high score
 
@@ -941,7 +1019,7 @@ int main() {
 
 		if (current_track != 0 && !playerDestroyed && !game_over->isGameOver && camX < LEVEL_WIDTH) {
 			current_track = 0;
-			Mix_PlayMusic(main_track, 0);
+			Mix_PlayMusic(main_track, -1);
 		}
 
 
@@ -997,6 +1075,10 @@ int main() {
 				}
 				// If the game is restarted, reset some things
 				if (!game_over->isGameOver) {
+					difficulty = game_over->diff;
+					if (game_over->diff == 1) LEVEL_WIDTH = 20000;
+					else if (game_over->diff == 2) LEVEL_WIDTH = 50000;
+					else if (game_over->diff == 3) LEVEL_WIDTH = 75000;
 					delete en;
 					en = new Enemy(-125, SCREEN_HEIGHT/2, 125, 53, 200, 200, game_over->diff, gRenderer);
 					delete player;
@@ -1075,13 +1157,13 @@ int main() {
 			bullets[i]->move();
 		}
 		// Have the enemy and kamikaze exit the screen if it's boss time.
-		if (camX > LEVEL_WIDTH && (en->getX() > -en->getWidth() || kam->getX() < SCREEN_WIDTH)) {
+		if (camX > LEVEL_WIDTH && (en->getX() > -en->getWidth() || kam->getX() < SCREEN_WIDTH) && !game_over->isGameOver) {
 			Mix_HaltMusic();
 			en->moveLeft();
 			kam->moveRight();
 			SDL_RenderPresent(gRenderer);
 		}
-		else if (camX > LEVEL_WIDTH + SCREEN_WIDTH) {
+		else if (camX > LEVEL_WIDTH + SCREEN_WIDTH && !game_over->isGameOver) {
 			bossBattle();
 		}
 

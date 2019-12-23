@@ -45,11 +45,11 @@ HealthBlock::HealthBlock(){
 HealthBlock::HealthBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength){
     HEALTH_HEIGHT=20;
     HEALTH_WIDTH=20;
-    HEALTH_ABS_X = rand() % LEVEL_WIDTH;
+    HEALTH_ABS_X = (rand() * 10) % LEVEL_WIDTH;
     HEALTH_ABS_Y= LEVEL_HEIGHT-600+rand()%500;
 
     while ((HEALTH_ABS_X - 1280) % cave_freq <= cave_width || (HEALTH_ABS_X>(openAir*72) && HEALTH_ABS_X+HEALTH_WIDTH<(openAir+openAirLength)*72)) {
-        HEALTH_ABS_X = rand() % LEVEL_WIDTH;
+        HEALTH_ABS_X = (rand() * 10) % LEVEL_WIDTH;
     }
 
     HEALTH_REL_X=HEALTH_ABS_X;
@@ -63,11 +63,11 @@ InfFireBlock::InfFireBlock(){
 InfFireBlock::InfFireBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength){
     INF_FIRE_HEIGHT=35;
     INF_FIRE_WIDTH=35;
-    INF_FIRE_ABS_X = rand() % LEVEL_WIDTH;
+    INF_FIRE_ABS_X = (rand() * 10) % LEVEL_WIDTH;
     INF_FIRE_ABS_Y= LEVEL_HEIGHT-600+rand()%500;
 
     while ((INF_FIRE_ABS_X - 1280) % cave_freq <= cave_width || (INF_FIRE_ABS_X>(openAir*72) && INF_FIRE_ABS_X+INF_FIRE_WIDTH<(openAir+openAirLength)*72)) {
-        INF_FIRE_ABS_X = rand() % LEVEL_WIDTH;
+        INF_FIRE_ABS_X = (rand() * 10) % LEVEL_WIDTH;
     }
 
     INF_FIRE_REL_X=INF_FIRE_ABS_X;
@@ -85,11 +85,11 @@ AllyPlaneBlock::AllyPlaneBlock(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *
     ALLY_PLANE_HEIGHT = 35;
     ALLY_PLANE_WIDTH = 35;
 
-    ALLY_PLANE_ABS_X = rand() % LEVEL_WIDTH;
+    ALLY_PLANE_ABS_X = (rand() * 10) % LEVEL_WIDTH;
     ALLY_PLANE_ABS_Y = LEVEL_HEIGHT - 600 + rand() % 500;
 
     while ((ALLY_PLANE_ABS_X - 1280) % cave_freq <= cave_width || (ALLY_PLANE_ABS_X>(openAir*72) && ALLY_PLANE_ABS_X+ALLY_PLANE_WIDTH<(openAir+openAirLength)*72)) {
-        ALLY_PLANE_ABS_X = rand() % LEVEL_WIDTH;
+        ALLY_PLANE_ABS_X = (rand() * 10) % LEVEL_WIDTH;
     }
 
     ALLY_PLANE_REL_X=ALLY_PLANE_ABS_X;
@@ -103,11 +103,11 @@ AutoFireBlock::AutoFireBlock(){
 AutoFireBlock::AutoFireBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength){
     AUTOFIRE_HEIGHT=35;
     AUTOFIRE_WIDTH=35;
-    AUTOFIRE_ABS_X = rand() % LEVEL_WIDTH;
+    AUTOFIRE_ABS_X = (rand() * 10) % LEVEL_WIDTH;
     AUTOFIRE_ABS_Y= LEVEL_HEIGHT-600+rand()%500;
 
     while ((AUTOFIRE_ABS_X - 1280) % cave_freq <= cave_width || (AUTOFIRE_ABS_X>(openAir*72) && AUTOFIRE_ABS_X+AUTOFIRE_WIDTH<(openAir+openAirLength)*72)) {
-        AUTOFIRE_ABS_X = rand() % LEVEL_WIDTH;
+        AUTOFIRE_ABS_X = (rand() * 10) % LEVEL_WIDTH;
     }
 
     AUTOFIRE_REL_X=AUTOFIRE_ABS_X;
@@ -121,11 +121,11 @@ InvincBlock::InvincBlock(){
 InvincBlock::InvincBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength){
     INVINCE_HEIGHT=35;
     INVINCE_WIDTH=35;
-    INVINCE_ABS_X = rand() % LEVEL_WIDTH;
+    INVINCE_ABS_X = (rand() * 10) % LEVEL_WIDTH;
     INVINCE_ABS_Y= LEVEL_HEIGHT-600+rand()%500;
 
     while ((INVINCE_ABS_X - 1280) % cave_freq <= cave_width || (INVINCE_ABS_X>(openAir*72) && INVINCE_ABS_X+INVINCE_WIDTH<(openAir+openAirLength)*72)) {
-        INVINCE_ABS_X = rand() % LEVEL_WIDTH;
+        INVINCE_ABS_X = (rand() * 10) % LEVEL_WIDTH;
     }
 
     INVINCE_REL_X=INVINCE_ABS_X;
@@ -139,11 +139,11 @@ SmallBlock::SmallBlock(){
 SmallBlock::SmallBlock(int LEVEL_WIDTH,int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength){
     SMALL_HEIGHT=35;
     SMALL_WIDTH=35;
-    SMALL_ABS_X = rand() % LEVEL_WIDTH;
+    SMALL_ABS_X = (rand() * 10) % LEVEL_WIDTH;
     SMALL_ABS_Y= LEVEL_HEIGHT-600+rand()%500;
 
     while ((SMALL_ABS_X - 1280) % cave_freq <= cave_width || (SMALL_ABS_X>(openAir*72) && SMALL_ABS_X+SMALL_WIDTH<(openAir+openAirLength)*72)) {
-        SMALL_ABS_X = rand() % LEVEL_WIDTH;
+        SMALL_ABS_X = (rand() * 10) % LEVEL_WIDTH;
     }
 
     SMALL_REL_X=SMALL_ABS_X;
@@ -161,11 +161,11 @@ Stalagmite::Stalagmite(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRendere
     STALAG_HEIGHT = rand() % 141 + 50;
     hitboxWidth = STALAG_WIDTH / 2;
 
-    STALAG_ABS_X = rand() % LEVEL_WIDTH;
+    STALAG_ABS_X = (rand() * 10) % LEVEL_WIDTH;
     STALAG_ABS_Y = LEVEL_HEIGHT - WallBlock::block_side - STALAG_HEIGHT;//growing from bottom of cave
 	// Select a new x coordinate if the current one is in a cave or open air section
 	while ((STALAG_ABS_X - 1280) % cave_freq <= cave_width || (STALAG_ABS_X>(openAir*72) && STALAG_ABS_X+STALAG_WIDTH<(openAir+openAirLength)*72)) {
-		STALAG_ABS_X = rand() % LEVEL_WIDTH;
+		STALAG_ABS_X = (rand() * 10) % LEVEL_WIDTH;
 	}
     //STALAG_ABS_Y= rand() % LEVEL_HEIGHT;
 
@@ -187,12 +187,12 @@ Stalagtite::Stalagtite(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRendere
     STALAG_HEIGHT = rand() % 141 + 50;
     hitboxWidth = STALAG_WIDTH / 2;
 
-    STALAG_ABS_X = rand() % LEVEL_WIDTH;
+    STALAG_ABS_X = (rand() * 10) % LEVEL_WIDTH;
 
     STALAG_ABS_Y = LEVEL_HEIGHT - 720 + WallBlock::block_side;//growing from top of cave
 	// Select a new x coordinate if the current one is in a cave or open air section
 	while ((STALAG_ABS_X - 1280) % cave_freq <= cave_width || (STALAG_ABS_X>(openAir*72) && STALAG_ABS_X+STALAG_WIDTH<(openAir+openAirLength)*72)) {
-		STALAG_ABS_X = rand() % LEVEL_WIDTH;
+		STALAG_ABS_X = (rand() * 10) % LEVEL_WIDTH;
 	}
     //STALAG_ABS_Y= rand() % LEVEL_HEIGHT;
 
@@ -216,14 +216,14 @@ Turret::Turret()
 Turret::Turret(int LEVEL_WIDTH, int LEVEL_HEIGHT, SDL_Renderer *gRenderer, int cave_freq, int cave_width, int openAir, int openAirLength, SDL_Texture* mSprite1, SDL_Texture* mSprite2) :
     gRenderer{ gRenderer }
 {
-    BLOCK_ABS_X = rand() % LEVEL_WIDTH;
+    BLOCK_ABS_X = (rand() * 10) % LEVEL_WIDTH;
 	BLOCK_ABS_Y = LEVEL_HEIGHT - WallBlock::block_side - Turret::BLOCK_HEIGHT;
 
 	if (rand() % 2 == 1) {
 		BLOCK_ABS_Y = LEVEL_HEIGHT - 720 + WallBlock::block_side;
 	}
 	while ((BLOCK_ABS_X - 1280) % cave_freq <= cave_width || (BLOCK_ABS_X>(openAir*72) && BLOCK_ABS_X+BLOCK_WIDTH<(openAir+openAirLength)*72 && BLOCK_ABS_Y==LEVEL_HEIGHT -720 + WallBlock::block_side)) {
-		BLOCK_ABS_X = rand() % LEVEL_WIDTH;
+		BLOCK_ABS_X = (rand() * 10) % LEVEL_WIDTH;
 	}
 
     // These should be the same first
@@ -958,15 +958,15 @@ void MapBlocks::render(int SCREEN_WIDTH, int SCREEN_HEIGHT, SDL_Renderer* gRende
     }
 
 
-    for (i = 0; i < ally_arr.size(); i++)
-    {
-        // Only render the invince powerup if it will be screen
-        if (ally_arr[i].ALLY_PLANE_REL_X < SCREEN_WIDTH && ally_arr[i].ALLY_PLANE_REL_Y < SCREEN_HEIGHT)
-        {
-            SDL_Rect fillRect = {(int)ally_arr[i].ALLY_PLANE_REL_X, (int)ally_arr[i].ALLY_PLANE_REL_Y, ally_arr[i].ALLY_PLANE_WIDTH, ally_arr[i].ALLY_PLANE_HEIGHT};
-            SDL_RenderCopyEx(gRenderer, allySprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
-        }
-    }
+    // for (i = 0; i < ally_arr.size(); i++)
+    // {
+    //     // Only render the invince powerup if it will be screen
+    //     if (ally_arr[i].ALLY_PLANE_REL_X < SCREEN_WIDTH && ally_arr[i].ALLY_PLANE_REL_Y < SCREEN_HEIGHT)
+    //     {
+    //         SDL_Rect fillRect = {(int)ally_arr[i].ALLY_PLANE_REL_X, (int)ally_arr[i].ALLY_PLANE_REL_Y, ally_arr[i].ALLY_PLANE_WIDTH, ally_arr[i].ALLY_PLANE_HEIGHT};
+    //         SDL_RenderCopyEx(gRenderer, allySprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+    //     }
+    // }
 
 
 
@@ -1331,16 +1331,16 @@ void BossBlocks::renderPowerups(SDL_Renderer* gRenderer)
     }
 
 
-    for (i = ally_arr.size() - 1; i >= 0; i--)
-    {
-        if (ally_arr[i].ALLY_PLANE_REL_X < -ally_arr[i].ALLY_PLANE_WIDTH) {
-			ally_arr.erase(ally_arr.begin() + i);
-		}
-		else {
-            SDL_Rect fillRect = {(int)ally_arr[i].ALLY_PLANE_REL_X, (int)ally_arr[i].ALLY_PLANE_REL_Y, ally_arr[i].ALLY_PLANE_WIDTH, ally_arr[i].ALLY_PLANE_HEIGHT};
-            SDL_RenderCopyEx(gRenderer, allySprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
-        }
-    }
+    // for (i = ally_arr.size() - 1; i >= 0; i--)
+    // {
+    //     if (ally_arr[i].ALLY_PLANE_REL_X < -ally_arr[i].ALLY_PLANE_WIDTH) {
+	// 		ally_arr.erase(ally_arr.begin() + i);
+	// 	}
+	// 	else {
+    //         SDL_Rect fillRect = {(int)ally_arr[i].ALLY_PLANE_REL_X, (int)ally_arr[i].ALLY_PLANE_REL_Y, ally_arr[i].ALLY_PLANE_WIDTH, ally_arr[i].ALLY_PLANE_HEIGHT};
+    //         SDL_RenderCopyEx(gRenderer, allySprite, nullptr, &fillRect, 0.0, nullptr, SDL_FLIP_NONE);
+    //     }
+    // }
 }
 
 void BossBlocks::renderExplosions(SDL_Renderer* gRenderer) {

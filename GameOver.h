@@ -29,9 +29,9 @@ public:
     void stopGame(Player*);
     int handleEvent(SDL_Event &e, SDL_Renderer *gRenderer);
     void render(SDL_Renderer *gRenderer);
+    void displayCredits(SDL_Renderer* gRenderer);
 private:
     void restart(SDL_Renderer *gRenderer);
-    void displayCredits(SDL_Renderer* gRenderer);
     int LEVEL_WIDTH = 100000;
     int LEVEL_HEIGHT = 2000;
 };

@@ -123,43 +123,73 @@ int main() {
 
 	SDL_RenderCopy(gRenderer, gTex[0], NULL, NULL);
 	SDL_RenderPresent(gRenderer);
-	SDL_Delay(5000);
+	int time = SDL_GetTicks();
+	while (SDL_GetTicks() - time < 5000) {
+		SDL_PumpEvents();
+	}
 
 	SDL_RenderCopy(gRenderer, gTex[1], NULL, NULL);
 	SDL_RenderPresent(gRenderer);
-	SDL_Delay(5000);
+	time = SDL_GetTicks();
+	while (SDL_GetTicks() - time < 5000) {
+		SDL_PumpEvents();
+	}
 
     SDL_RenderCopy(gRenderer, gTex[2], NULL, NULL);
 	SDL_RenderPresent(gRenderer);
-	SDL_Delay(5000);
+	time = SDL_GetTicks();
+	while (SDL_GetTicks() - time < 5000) {
+		SDL_PumpEvents();
+	}
 
     SDL_RenderCopy(gRenderer, gTex[3], NULL, NULL);
 	SDL_RenderPresent(gRenderer);
-	SDL_Delay(5000);
+	time = SDL_GetTicks();
+	while (SDL_GetTicks() - time < 5000) {
+		SDL_PumpEvents();
+	}
 
     SDL_RenderCopy(gRenderer, gTex[4], NULL, NULL);
 	SDL_RenderPresent(gRenderer);
-	SDL_Delay(5000);
+	time = SDL_GetTicks();
+	while (SDL_GetTicks() - time < 5000) {
+		SDL_PumpEvents();
+	}
 
     SDL_RenderCopy(gRenderer, gTex[5], NULL, NULL);
 	SDL_RenderPresent(gRenderer);
-	SDL_Delay(5000);
+	time = SDL_GetTicks();
+	while (SDL_GetTicks() - time < 5000) {
+		SDL_PumpEvents();
+	}
 
     SDL_RenderCopy(gRenderer, gTex[6], NULL, NULL);
 	SDL_RenderPresent(gRenderer);
-	SDL_Delay(5000);
+	time = SDL_GetTicks();
+	while (SDL_GetTicks() - time < 5000) {
+		SDL_PumpEvents();
+	}
 
     SDL_RenderCopy(gRenderer, gTex[7], NULL, NULL);
 	SDL_RenderPresent(gRenderer);
-	SDL_Delay(5000);
+	time = SDL_GetTicks();
+	while (SDL_GetTicks() - time < 5000) {
+		SDL_PumpEvents();
+	}
 
     SDL_RenderCopy(gRenderer, gTex[8], NULL, NULL);
 	SDL_RenderPresent(gRenderer);
-	SDL_Delay(5000);
+	time = SDL_GetTicks();
+	while (SDL_GetTicks() - time < 5000) {
+		SDL_PumpEvents();
+	}
 
     SDL_RenderCopy(gRenderer, gTex[9], NULL, NULL);
 	SDL_RenderPresent(gRenderer);
-	SDL_Delay(5000);
+	time = SDL_GetTicks();
+	while (SDL_GetTicks() - time < 5000) {
+		SDL_PumpEvents();
+	}
 
 	close();
 }

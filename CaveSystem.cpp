@@ -261,11 +261,11 @@ void CaveSystem::generateRandomCave()
 
     int padding;
     if(diff == 3)
-        padding = rand() % 3 + 15;
+        padding = rand() % 3 + 8;
     else if (diff == 2)
-        padding = rand() % 4 + 12;
+        padding = rand() % 4 + 9;
     else if (diff == 1)
-        padding = rand() % 3 + 9;
+        padding = rand() % 3 + 10;
 
 
     insert_path(CaveSystem::cave_system, &path, padding);

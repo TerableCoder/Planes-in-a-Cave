@@ -47,13 +47,13 @@ Boss::Boss(int x, int y, int xvel, int yvel, int diff, SDL_Renderer *gRenderer):
   maxYVelo = 200;
   last_pattern = 0;
   if(diff == 3){
-	max_health = 2000;
-  }
-  else if(diff == 2){
 	max_health = 1500;
   }
-  else{
+  else if(diff == 2){
 	max_health = 1000;
+  }
+  else{
+	max_health = 500;
   }
   health = max_health;
   difficulty = diff;
@@ -62,7 +62,7 @@ Boss::Boss(int x, int y, int xvel, int yvel, int diff, SDL_Renderer *gRenderer):
   tier2 = false;
   destroyed = false;
   time_destroyed = 0;
-  //sprite1 = loadImage(name, gRenderer);
+  sprite1 = loadImage("sprites/ufo1.png", gRenderer);
   exclamation_point = loadImage("sprites/ExclamationPoint.png", gRenderer);
   hit_sound = Mix_LoadWAV("sounds/player_hit.wav");
 }
@@ -76,11 +76,8 @@ Boss::~Boss() {
 
 void Boss::renderBoss(int SCREEN_WIDTH, SDL_Renderer* gRenderer){
 	if (destroyed && SDL_GetTicks() - time_destroyed > 4000) return;
-	//SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &boss_sprite, 0, nullptr, SDL_FLIP_NONE);
-	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
-	SDL_RenderFillRect(gRenderer, &boss_hitbox_top);
-	SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0xFF, 0xFF);
-	SDL_RenderFillRect(gRenderer, &boss_hitbox_bottom);
+	boss_sprite = {(int)xPos,(int)yPos,WIDTH,HEIGHT};
+	SDL_RenderCopyEx(gRenderer, sprite1, nullptr, &boss_sprite, 0, nullptr, SDL_FLIP_NONE);
 	boss_hitbox_bottom = {(int) xPos, (int) (yPos+(HEIGHT/2)), WIDTH, HEIGHT/2};
 	boss_hitbox_top = {(int) (xPos+(WIDTH/4)), (int) yPos, WIDTH/2, HEIGHT};
 	// Render the warning exclamation point if in the proper phase
@@ -110,6 +107,7 @@ void Boss::move(int SCREEN_WIDTH){
 	time_since_pattern = SDL_GetTicks() - last_pattern;
 	if (time_since_pattern >= PATTERN_DELAY && pattern == 0){
 		pattern = (rand() % NUM_PATTERNS) + 1;
+		//pattern =5;
 	}
 	if (tier2 && pattern == -1) {
 		backToCenter(SCREEN_WIDTH);
@@ -126,6 +124,9 @@ void Boss::move(int SCREEN_WIDTH){
 	else if (pattern == 4) {
 		patternFour(SCREEN_WIDTH);
 	}
+	else if (pattern == 5){
+		patternFive(SCREEN_WIDTH);
+	}
 	else{
 		if (yVelo == 0) {
 			yVelo = maxYVelo;
@@ -140,7 +141,6 @@ void Boss::move(int SCREEN_WIDTH){
 	time_since_move = SDL_GetTicks() - last_move;
 	xPos += (double) (xVelo * time_since_move)/1000;
 	yPos += (double) (yVelo * time_since_move)/1000;
-	boss_sprite = {(int)xPos,(int)yPos,WIDTH,HEIGHT};
 	boss_hitbox_bottom = {(int) xPos, (int) (yPos+(HEIGHT/2)), WIDTH, HEIGHT/2};
 	boss_hitbox_top = {(int) (xPos+(WIDTH/4)), (int) yPos, WIDTH/2, HEIGHT};
 	last_move = SDL_GetTicks();
@@ -183,6 +183,9 @@ std::vector<Missile*> Boss::handleFiringMissile(std::vector<Missile*> missiles ,
   }
   if (pattern == 3){
     missiles = handleFiringMissilePatternThree(missiles, x, y, gRenderer);
+  }
+  if(pattern == 5){
+  	missiles = handleFiringMissilePatternFive(missiles, x, y, gRenderer);
   }
   // No missiles get fired for pattern 4 - the boss attacks by trying to hit the player
   return missiles;
@@ -260,6 +263,22 @@ std::vector<Missile*> Boss::handleFiringMissilePatternThree(std::vector<Missile*
     last_shot_missile = SDL_GetTicks();
   }
   return missiles;
+}
+
+std::vector<Missile*> Boss::handleFiringMissilePatternFive(std::vector<Missile*> missiles, int x, int y, SDL_Renderer* gRenderer){
+	int damage = 500;
+	int blast_radius = 150;
+	int xDist = x - xPos;
+    int yDist = y - (yPos+(HEIGHT/2));
+    double math = (double)xDist / sqrt(xDist * xDist + yDist * yDist) * 400;
+    double math2 = ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400;
+	// Fire a missile to the left if in phases 2 or 3
+	if ((phase == 2) && time_since_shot_missile >= PATTERN_FIVE_FIRING_FREQ && xPos >=0){
+		Missile * m = new Missile(damage, blast_radius, xPos, yPos+(HEIGHT/2), ((double)xDist / sqrt(xDist * xDist + yDist * yDist)) * 400, ((double)yDist / sqrt(xDist * xDist + yDist * yDist)) * 400, loadImage("sprites/missile.png", gRenderer), gRenderer);
+		missiles.push_back(m);
+		last_shot_missile = SDL_GetTicks();
+    }
+	return missiles;
 }
 
 
@@ -577,5 +596,53 @@ void Boss::patternFour(int SCREEN_WIDTH) {
 		last_pattern = SDL_GetTicks();
 		pattern = 0;
 		numFired = 0;
+	}
+}
+
+void Boss::patternFive(int SCREEN_WIDTH)
+{
+	int SCREEN_HEIGHT=720;
+	xVelo=0;
+	yVelo=0;
+	
+	//Phase 1: disapear
+	if(phase==1){
+		blinks = 0;
+		xPos = -1000;
+		yPos = -1000;
+		phase_time =SDL_GetTicks();
+		phase =2;
+		std::cout << "Boss has disapeared"<<std::endl;
+	}
+	//Phase 2: wait
+	else if(phase == 2){
+
+		
+		if(blinks >= NUM_BLINKS){
+			phase = 4;
+		}
+		else if(phase_time + PATTERN_FIVE_DISAPEAR_TIME < SDL_GetTicks()){
+			phase =3;
+		}
+		
+
+	}
+	//Phase 3: Blink to random location
+	else if(phase==3){
+		xPos=rand() % (SCREEN_WIDTH-WIDTH);
+		yPos=rand() % (SCREEN_HEIGHT-HEIGHT);
+		phase_time = SDL_GetTicks();
+		blinks++;
+		phase =2;
+	}
+
+	//Phase 4: reset
+	else if(phase ==4){
+		xPos = SCREEN_WIDTH - WIDTH - 50;
+		yPos = SCREEN_HEIGHT - HEIGHT/2;
+		phase =1;
+		last_pattern = SDL_GetTicks();
+		pattern =0;
+		blinks=0;
 	}
 }

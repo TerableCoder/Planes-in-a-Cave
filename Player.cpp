@@ -84,13 +84,12 @@ void Player::initializeSprites(int diff, SDL_Renderer *gRenderer)
             case 1:
                 sprite1 = loadImage("sprites/a10.png", gRenderer);
                 sprite2 = loadImage("sprites/a10.png", gRenderer);
-
                 player_width = 178;
                 player_height = 47;
                 break;
             case 2:
                 sprite1 = loadImage("sprites/f16.png", gRenderer);
-                sprite2 = loadImage("sprites/f16.png", gRenderer);
+                sprite2 = loadImage("sprites/f16a.png", gRenderer);
                 player_width = 124;
                 player_height = 37;
                 break;
@@ -126,19 +125,19 @@ void Player::initializeSprites(int diff, SDL_Renderer *gRenderer)
                 break;
             case 8:
                 sprite1 = loadImage("sprites/mig31.png", gRenderer);
-                sprite2 = loadImage("sprites/mig31.png", gRenderer);
+                sprite2 = loadImage("sprites/mig31a.png", gRenderer);
                 player_width = 209;
                 player_height = 38;
                 break;
             case 9:
                 sprite1 = loadImage("sprites/mig29.png", gRenderer);
-                sprite2 = loadImage("sprites/mig29.png", gRenderer);
+                sprite2 = loadImage("sprites/mig29a.png", gRenderer);
                 player_width = 148;
                 player_height = 42;
                 break;
             case 10:
                 sprite1 = loadImage("sprites/su24.png", gRenderer);
-                sprite2 = loadImage("sprites/su24.png", gRenderer);
+                sprite2 = loadImage("sprites/su24a.png", gRenderer);
                 player_width = 176;
                 player_height = 50;
                 break;
@@ -379,7 +378,7 @@ void Player::render(SDL_Renderer *gRenderer, int SCREEN_WIDTH, int SCREEN_HEIGHT
 // Damages the player if they've been hit
 void Player::hit(int damage) {
 	// If the player has just been hit, they should be invunerable, so don't damage them
-	if(!invincePower){
+	if(!invincePower && health > 0){
         Mix_PlayChannel(-1, hit_sound, 0);
         if(this->difficulty == 2){
             damage /= 1.5;
@@ -463,31 +462,36 @@ bool Player::checkCollide(int x, int y, int pWidth, int pHeight, int xTwo, int y
 
 Bullet* Player::handleForwardFiring()
 {
+	if (!fshot_maxed && (SDL_GetTicks()- time_since_f_shot) >= 100) {
+		Bullet* b = new Bullet(x_pos+PLAYER_WIDTH+5 -fabs(PLAYER_WIDTH/8*sin(tiltAngle)), y_pos+PLAYER_HEIGHT/2+PLAYER_HEIGHT*sin(tiltAngle), fabs(450*cos(tiltAngle)), tiltAngle >= 0 ? fabs(450*sin(tiltAngle)) : -fabs(450*sin(tiltAngle)));
+    }
+    if(!infiniteShooting || !autoFire){
     //std::cout << "entered firing handler" << std::endl;
     //std::cout << "time since f shot = " << SDL_GetTicks()- time_since_f_shot << std::endl;
     double bulletAngle = tiltAngle*PI/180;
-	if (!fshot_maxed && (SDL_GetTicks()- time_since_f_shot) >= 100) {
-        //std::cout << "Firing new bullet"<< std::endl;
-        Mix_PlayChannel(-1, bullet_shot, 0);
+        if (!fshot_maxed && (SDL_GetTicks()- time_since_f_shot) >= 100) {
+                //std::cout << "Firing new bullet"<< std::endl;
+            Mix_PlayChannel(-1, bullet_shot, 0);
 
-        Bullet *b;
-        if(small == false){
-            b = new Bullet(x_pos+getWidth()+5 -fabs(getWidth()/8*sin(bulletAngle)), y_pos+player_height/2+player_height*sin(bulletAngle), fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? fabs(450*sin(bulletAngle)) : -fabs(450*sin(bulletAngle)));
+            Bullet *b;
+            if(small == false){
+                b = new Bullet(x_pos+getWidth()+5 -fabs(getWidth()/8*sin(bulletAngle)), y_pos+player_height/2+player_height*sin(bulletAngle), fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? fabs(450*sin(bulletAngle)) : -fabs(450*sin(bulletAngle)));
+            }
+            else{
+                b = new Bullet(x_pos+getWidth()+5 -fabs(getWidth()/8*sin(bulletAngle)), y_pos+player_height/2+player_height*sin(bulletAngle), fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? fabs(450*sin(bulletAngle)) : -fabs(450*sin(bulletAngle)));
+            }
+            if(!infiniteShooting){
+        		fshot_heat += SHOOT_COST;
+        		if (fshot_heat > MAX_SHOOT_HEAT) {
+        			fshot_maxed = true;
+        			fshot_heat = MAX_SHOOT_HEAT;
+        			fshot_max_time = SDL_GetTicks();
+        		}
+            }
+            time_since_f_shot = SDL_GetTicks();
+    		return b;
         }
-        else{
-            b = new Bullet(x_pos+getWidth()+5 -fabs(getWidth()/8*sin(bulletAngle)), y_pos+player_height/2+player_height*sin(bulletAngle), fabs(450*cos(bulletAngle)), bulletAngle >= 0 ? fabs(450*sin(bulletAngle)) : -fabs(450*sin(bulletAngle)));
-        }
-        if(!infiniteShooting){
-    		fshot_heat += SHOOT_COST;
-    		if (fshot_heat > MAX_SHOOT_HEAT) {
-    			fshot_maxed = true;
-    			fshot_heat = MAX_SHOOT_HEAT;
-    			fshot_max_time = SDL_GetTicks();
-    		}
-        }
-        time_since_f_shot = SDL_GetTicks();
-		return b;
-	}
+    }
     return nullptr;
 }
 

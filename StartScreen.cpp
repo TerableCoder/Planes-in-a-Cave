@@ -3,9 +3,10 @@
 #include <SDL_image.h>
 
 
-StartScreen::StartScreen(SDL_Texture *start, SDL_Texture *btn){
+StartScreen::StartScreen(SDL_Texture *start, SDL_Texture *btn, SDL_Texture *info){
 	gBackground=start;
 	btn_start=btn;
+	btn_info=info;
 }
 
 void StartScreen::handleEvent(SDL_Event&e)
@@ -15,15 +16,20 @@ void StartScreen::handleEvent(SDL_Event&e)
 		int x, y;
 		SDL_GetMouseState(&x, &y);
 
-		bool inStart = true;
+		bool inStart = false;
+		bool inInfo = false;
 
-		if(x < START_BUTTON_X){ inStart = false;}
-		else if(x > START_BUTTON_X + START_BUTTON_WIDTH){ inStart = false;}
-		else if(y < START_BUTTON_Y){ inStart = false;}
-		else if(y > START_BUTTON_Y + START_BUTTON_HEIGHT){ inStart = false;}
+		if(x > START_BUTTON_X && x < START_BUTTON_X + START_BUTTON_WIDTH && y > START_BUTTON_Y && y < START_BUTTON_Y + START_BUTTON_HEIGHT)
+			{ inStart = true;}
+
+		if(x > INFO_BUTTON_X && x < INFO_BUTTON_X + INFO_BUTTON_WIDTH && y > INFO_BUTTON_Y && y < INFO_BUTTON_Y + INFO_BUTTON_HEIGHT)
+			{ inInfo = true;}
 
 		if(inStart && e.type == SDL_MOUSEBUTTONUP){
 			notStarted=false;
+		}
+		if(inInfo && e.type == SDL_MOUSEBUTTONUP){
+			infoMenu=true;
 		}
 	}
 }
@@ -35,5 +41,8 @@ void StartScreen::render(SDL_Renderer *gRenderer)
 
 	SDL_Rect fillRectButton = {START_BUTTON_X, START_BUTTON_Y, START_BUTTON_WIDTH, START_BUTTON_HEIGHT};
 	SDL_RenderCopyEx(gRenderer, btn_start, nullptr, &fillRectButton, 0.0, nullptr, SDL_FLIP_NONE);
+
+	SDL_Rect fillRectInfo = {INFO_BUTTON_X, INFO_BUTTON_Y, INFO_BUTTON_WIDTH, INFO_BUTTON_HEIGHT};
+	SDL_RenderCopyEx(gRenderer, btn_info, nullptr, &fillRectInfo, 0.0, nullptr, SDL_FLIP_NONE);
 }
 
